@@ -1,0 +1,74 @@
+extend layout
+
+doctype html
+html(lang="en")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    title Log in
+    link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous")
+    style
+      include ../public/stylesheets/my-login.css
+    style
+      include ../public/stylesheets/bootstrap-social.css
+    script(src="https://kit.fontawesome.com/8ea23c42ca.js" crossorigin="anonymous")
+
+  body(class="my-login-page")
+    header.navbar.navbar-dark.sticky-top.bg-dark.flex-md-nowrap.p-0.shadow
+      a.navbar-brand.col-md-3.col-lg-2.me-0.px-3(href='/')
+      button.navbar-toggler.position-absolute.d-md-none.collapsed(type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation")
+        span.navbar-toggler-icon
+
+    section(class="h-100")
+      .container.h-100
+        .row.justify-content-md-center.h-100
+          .card-wrapper.mt-2
+            .card.fat
+              .card-body
+                h4.card-title.text-center.text-secondary Ingresar
+                form(method="POST" class="my-login-validation" novalidate action='/login')
+                  .form-group
+                    label(for="email") Email
+                    input#email.form-control(type="email" name="email" value="" required autofocus)
+                    .invalid-feedback Email invalido
+                  .form-group
+                    label(for="password") Password
+                    a(href="forgot.html" class="float-right") Olvidaste tu Password?
+                    input#password.form-control(type="password" name="password" required data-eye)
+                    .invalid-feedback Password requerido
+                  .form-group
+                    .custom-checkbox.custom-control
+                      input.custom-control-input(type="checkbox" name="remember" id="remember")
+                      label.custom-control-label(for="remember") Recordame
+                  .form-group.m-0
+                    button.btn.btn-primary.btn-block(type="submit") Ingresar
+                  .mt-4.text-center
+                    | No tienes cuenta?
+                    a(href="/register") Crear
+                .mt-4.text-center
+                  hr
+                  | O ingresa con:
+                  a.btn.btn-block.btn-adn.btn-github.text-white.mt-3(href='auth/github')
+                    i.fab.fa-github
+                    span.text Sign in with GitHub
+            .footer
+
+    script(src="//cdn.jsdelivr.net/npm/sweetalert2@11")
+    if alert
+      script.
+        Swal.fire({
+          title: '#{alertTitle}',       
+          text: '#{alertMessage}',
+          icon: '#{alertIcon}',
+          showConfirmButton: '#{showConfirmButton}',
+          timer: '#{timer}'
+        }).then(()=>{
+          window.location = '/#{ruta}'
+        })
+
+    script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous")
+    script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous")
+    script
+      include ../public/javascripts/my-login.js
+

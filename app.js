@@ -22,7 +22,7 @@ const MedicoEsp = require('./models/medico_esp');
 const Perfil = require('./models/perfil');
 const Persona = require('./models/persona');
 const Sucursal = require('./models/sucursal');
-const TipoAtencion = require('./models/tipoatencion');  // Corregido el nombre del modelo
+const TipoAtencion = require('./models/tipoatencion');
 const Turno = require('./models/turno');
 
 // Configuración de las rutas
@@ -34,3 +34,4 @@ app.use((req, res, next) => {
 });
 
 module.exports = app;
+

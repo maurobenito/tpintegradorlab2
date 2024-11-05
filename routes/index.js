@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const mainController = require('../controllers/mainController');
 
-// Ruta principal que renderiza index.pug
-router.get('/', mainController.home);
+// Ruta para mostrar el formulario de login
+router.get('/login', mainController.showLogin);  // Usando el controlador
 
 module.exports = router;
