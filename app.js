@@ -1,37 +1,60 @@
 const express = require('express');
 const path = require('path');
-const routes = require('./routes/index'); 
+const helmet = require('helmet');  // Agregado para mejorar la seguridad
+const routes = require('./routes/index');
 const app = express();
 
-// Configuración de middleware
+// Middleware básico
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Configuración de archivos estáticos y motor de vistas
+
+
+// Seguridad adicional con Helmet
+app.use(helmet()); // Agrega encabezados de seguridad comunes
+
+
+
+// Archivos estáticos y configuración de vistas
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use('/uploads', express.static('uploads'));
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Importación de modelos
-const Calendar = require('./models/calendar');
-const Especialidad = require('./models/especialidad');
-const Estado = require('./models/estado');
-const Medicos = require('./models/medicos');
-const MedicoEsp = require('./models/medico_esp');
-const Perfil = require('./models/perfil');
-const Persona = require('./models/persona');
-const Sucursal = require('./models/sucursal');
-const TipoAtencion = require('./models/tipoatencion');
-const Turno = require('./models/turno');
+// Middleware de seguridad específica
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    next();
+});
 
-// Configuración de las rutas
+// Importación de modelos (Ejemplo de conexión para futuras consultas)
+const {
+    Calendar, Especialidad, Estado, Medicos,
+    MedicoEsp, Perfil, Persona, Sucursal,
+    TipoAtencion, Turno
+} = require('./models');
+
+// Configuración de rutas
 app.use('/', routes);
 
-// Manejo de errores 404
+// Manejo de error 404 - Página no encontrada
 app.use((req, res, next) => {
-    res.status(404).render('404', { title: 'Página no encontrada' });
+    res.status(404).render('404', { 
+        title: 'Página no encontrada',
+        message: 'La página que buscas no existe'
+    });
+});
+
+// Manejador de errores global
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(err.status || 500).render('error', {
+        title: 'Error',
+        message: process.env.NODE_ENV === 'development' ? err.message : 'Ha ocurrido un error'
+    });
 });
 
 module.exports = app;
-

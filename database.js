@@ -9,16 +9,13 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST || 'localhost',
     dialect: 'mysql',
     logging: false,
+    pool: {            // Opciones de conexión para mejorar el rendimiento
+      max: 5,          // Máximo número de conexiones en el pool
+      min: 0,          // Mínimo número de conexiones en el pool
+      acquire: 30000,  // Tiempo máximo de espera para adquirir conexión (ms)
+      idle: 10000      // Tiempo de espera antes de liberar conexión inactiva (ms)
+    }
   }
 );
 
-sequelize.authenticate()
-  .then(() => {
-    console.log('Conexión a la base de datos exitosa.');
-  })
-  .catch((error) => {
-    console.error('No se pudo conectar a la base de datos:', error);
-  });
-
 module.exports = sequelize;
-

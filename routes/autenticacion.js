@@ -1,39 +1,21 @@
 var express = require("express");
 var router = express.Router();
-var passport = require("passport");
 const bcrypt = require("bcrypt");
 const User = require("../models").User;
 
-router.get("/github", passport.authenticate("github"));
-
-router.get(
-  "/github/callback",
-  // console.log("HOLA Aca estoy en /github/callback"),
-  passport.authenticate("github", { failureRedirect: "/auth/error" }),
-  function (req, res) {
-    res.redirect(301, "/");
-  }
-);
-
-router.post("/error", function (req, res) {
-  res.send("Ocurrio un error al validar en github");
-});
-
+// Ruta de logout
 router.get("/logout", (req, res) => {
   req.session.destroy();
   req.logout();
   res.redirect("/");
 });
 
-//Defino un middleware para autenticacion
+// Defino un middleware para autenticación
 var EstaAutenticado = function (req, res, next) {
-  // Passport agrega este método al objeto request.
-  console.log(req.isAuthenticated() + "---" + req.user[0].nombre);
-  if (req.user) {
-    req.user = req.user;
+  if (req.isAuthenticated() && req.user) {
     return next();
   }
-  // si el usuario no esta autenticado entonces lo redirigimos a donde tengo el login
+  // Si el usuario no está autenticado, lo redirige a la página de login
   res.redirect("/");
 };
 
