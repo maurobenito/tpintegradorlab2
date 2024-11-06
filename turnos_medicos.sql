@@ -124,9 +124,9 @@ CREATE TABLE `persona` (
   `dni` int(20) NOT NULL,
   `nombre` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `apellido` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `direccion` int(100) NOT NULL,
+  `direccion` VARCHAR(100) NOT NULL,
   `localidad` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `telefono` int(100) NOT NULL,
+  `telefono` VARCHAR(20) NOT NULL,
   `mail` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -138,9 +138,11 @@ CREATE TABLE `persona` (
 
 CREATE TABLE `sucursal` (
   `sucursalid` int(20) NOT NULL,
-  `nombre_sucrsal` int(11) NOT NULL,
+  `nombre_sucrsal` VARCHAR(100) NOT NULL,
   `direccion` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `estado` tinyint(4) NOT NULL
+  `estado` tinyint(4) NOT NULL,
+  `telefono` VARCHAR(20),
+  `email` VARCHAR(100)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -167,7 +169,7 @@ CREATE TABLE `turno` (
   `persona_id` int(20) NOT NULL,
   `calendar_id` int(20) NOT NULL,
   `fecha` date NOT NULL,
-  `hora` date NOT NULL,
+  `hora` TIME NOT NULL,
   `estadoturno_id` int(4) NOT NULL,
   `observaciones` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

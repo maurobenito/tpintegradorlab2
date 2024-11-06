@@ -1,59 +1,75 @@
 const express = require('express');
 const path = require('path');
-const helmet = require('helmet');  // Agregado para mejorar la seguridad
-const routes = require('./routes/index');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const dotenv = require('dotenv');
+const authController = require('./controllers/autenticacionctrl');
+
+// Cargar variables de entorno al inicio
+dotenv.config();
+
+// Verificar variable de entorno crítica
+if (!process.env.SESSION_SECRET) {
+    console.error('no está definida en las variables de entorno');
+    process.exit(1);
+}
+
 const app = express();
 
-// Middleware básico
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000
+    }
+}));
 
-
-
-// Seguridad adicional con Helmet
-app.use(helmet()); // Agrega encabezados de seguridad comunes
-
-
-
-// Archivos estáticos y configuración de vistas
-app.use(express.static(path.join(__dirname, 'public')));
-app.set('views', path.join(__dirname, 'views'));
+// View engine
 app.set('view engine', 'pug');
-app.use('/uploads', express.static('uploads'));
-app.use(express.static(path.join(__dirname, 'public')));
+app.set('views', path.join(__dirname, 'views'));
 
-// Middleware de seguridad específica
+// Rutas públicas
+app.use('/auth', require('./routes/autenticacion'));
+app.use('/css', express.static(path.join(__dirname, 'public/css')));
+app.use('/js', express.static(path.join(__dirname, 'public/js')));
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
+
+// Middleware de autenticación global para todas las rutas excepto /auth
 app.use((req, res, next) => {
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-Frame-Options', 'DENY');
-    res.setHeader('X-XSS-Protection', '1; mode=block');
-    next();
+    if (req.path.startsWith('/auth/') || 
+        req.path.startsWith('/css/') || 
+        req.path.startsWith('/js/') || 
+        req.path.startsWith('/images/')) {
+        return next();
+    }
+    authController.isAuthenticated(req, res, next);
 });
 
-// Importación de modelos (Ejemplo de conexión para futuras consultas)
-const {
-    Calendar, Especialidad, Estado, Medicos,
-    MedicoEsp, Perfil, Persona, Sucursal,
-    TipoAtencion, Turno
-} = require('./models');
+// Rutas protegidas
+app.use('/', require('./routes/index'));
 
-// Configuración de rutas
-app.use('/', routes);
-
-// Manejo de error 404 - Página no encontrada
-app.use((req, res, next) => {
+// Manejo de errores 404
+app.use((req, res) => {
     res.status(404).render('404', { 
         title: 'Página no encontrada',
-        message: 'La página que buscas no existe'
+        user: req.user,
+        persona: req.persona
     });
 });
 
-// Manejador de errores global
+// Manejo de errores generales
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(err.status || 500).render('error', {
-        title: 'Error',
-        message: process.env.NODE_ENV === 'development' ? err.message : 'Ha ocurrido un error'
+    res.status(500).render('404', { 
+        title: 'Error del servidor',
+        user: req.user,
+        persona: req.persona
     });
 });
 

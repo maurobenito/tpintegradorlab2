@@ -1,21 +1,17 @@
-const { Sequelize } = require('sequelize');
-require('dotenv').config();
-
-const sequelize = new Sequelize(
-  process.env.DB_NAME || 'turnos_medicos',
-  process.env.DB_USER || 'root',
-  process.env.DB_PASSWORD || '',
-  {
+const mysql = require('mysql');
+const connection = mysql.createConnection({
     host: process.env.DB_HOST || 'localhost',
-    dialect: 'mysql',
-    logging: false,
-    pool: {            // Opciones de conexión para mejorar el rendimiento
-      max: 5,          // Máximo número de conexiones en el pool
-      min: 0,          // Mínimo número de conexiones en el pool
-      acquire: 30000,  // Tiempo máximo de espera para adquirir conexión (ms)
-      idle: 10000      // Tiempo de espera antes de liberar conexión inactiva (ms)
-    }
-  }
-);
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_DATABASE || 'turnos_medicos'
+});
 
-module.exports = sequelize;
+connection.connect((error) => {
+    if (error) {
+        console.log('El error de conexión es: ' + error);
+        return;
+    }
+    console.log('¡Conectado a la base de datos!');
+});
+
+module.exports = connection;
